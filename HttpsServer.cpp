@@ -116,7 +116,7 @@ bool HttpsServer::Listen(const int& port)
 {
 	std::jthread jth(
 		[&]() {
-			Ñonnect_waiting(port);
+			Connect_waiting(port);
 		}
 	);
 	return true;
