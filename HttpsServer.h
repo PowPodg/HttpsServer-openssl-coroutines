@@ -78,7 +78,7 @@ class HttpsServer
 		void execution();
 	};
 //-------
-	task_asyn Ñonnect_waiting(const int& port);
+	task_asyn Connect_waiting(const int& port);
 public:
 	HttpsServer(const std::string_view, const std::string_view);
 	~HttpsServer();

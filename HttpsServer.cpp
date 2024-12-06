@@ -95,7 +95,7 @@ SOCKET HttpsServer::Create_listen_socket(const int& port)
 	return Listen_socket;
 }
 //-----------------------------------------------------------
-HttpsServer::task_asyn HttpsServer::Ñonnect_waiting(const int& port)
+HttpsServer::task_asyn HttpsServer::Connect_waiting(const int& port)
 {
 	listen_sock = Create_listen_socket(port);
 
