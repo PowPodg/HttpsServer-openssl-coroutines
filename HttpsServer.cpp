@@ -4,6 +4,7 @@
 
 HttpsServer::HttpsServer(const std::string_view _cert, const std::string_view _prvt_key)
 {
+	listen_sock = INVALID_SOCKET;
 	ssl_ctx = SSL_CTX_new(TLS_server_method());
 	if (ssl_ctx)
 	{
