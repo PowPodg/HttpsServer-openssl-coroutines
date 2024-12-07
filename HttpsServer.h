@@ -29,7 +29,7 @@ class HttpsServer
 			task_asyn get_return_object() { return task_asyn{}; }
 			std::suspend_never initial_suspend() noexcept { return {}; }
 			std::suspend_never final_suspend() noexcept { return {}; }
-			void return_void() { std::cout << "return_void\n"; }
+			void return_void() {}
 			void unhandled_exception() {}
 		};
 		using promise_type = asyn_promise;
