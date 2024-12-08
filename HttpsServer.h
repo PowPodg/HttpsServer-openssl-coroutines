@@ -44,6 +44,7 @@ class HttpsServer
 	SOCKET Create_listen_socket(const int&);
 	//--------
 	class Client {
+		std::string rest_get = "GET ";
 		VoidFun void_func;
 		struct rget {
 			std::string resp_header = std::string(SIZE_GET_REQ, '\0');

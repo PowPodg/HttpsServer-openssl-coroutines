@@ -125,10 +125,7 @@ bool HttpsServer::Listen(const int& port)
 //--------------------------------------------------
 bool HttpsServer::Client::Analys_expression(const arr_pairs& arr_get_prs)
 {
-	int rxlen = 0;
-	std::string rest_get = "GET ";
 	void_func = nullptr;
-
 	if (Header_received.find(rest_get) != std::string::npos)
 	{
 		for (auto& p : arr_get_prs)
