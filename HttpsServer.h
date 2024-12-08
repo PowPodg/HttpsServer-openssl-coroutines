@@ -48,7 +48,6 @@ class HttpsServer
 		struct rget {
 			std::string resp_header = std::string(SIZE_GET_REQ, '\0');
 			std::string_view resp_body;
-			std::string req = std::string(SIZE_GET_REQ, '\0');
 			int Content_Length = 10;
 			rget();
 			void set_cont_len(const int&);
