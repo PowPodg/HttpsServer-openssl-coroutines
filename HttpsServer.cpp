@@ -161,7 +161,7 @@ void HttpsServer::Client::rget::set_cont_len(const int& Cont_Length)
 int HttpsServer::Client::Receive_data(SSL* ssl_temp)
 {
 	int rxlen = SSL_read(ssl_temp, (void*)Header_received.c_str(), SIZE_GET_REQ);
-
+	Header_received.resize(rxlen + 1);
 	if (rxlen <= 0)
 	{
 		if (rxlen == 0) {
