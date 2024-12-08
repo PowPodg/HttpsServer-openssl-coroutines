@@ -10,13 +10,13 @@ HttpsServer::HttpsServer(const std::string_view _cert, const std::string_view _p
 	{
 		SSL_CTX_set_options(ssl_ctx, SSL_OP_NO_COMPRESSION | SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
 		SSL_CTX_set_min_proto_version(ssl_ctx, TLS1_3_VERSION);
-		if (SSL_CTX_use_certificate_file(ssl_ctx, (const char*)_cert.data(), SSL_FILETYPE_PEM) <= 0)
+		if (SSL_CTX_use_certificate_file(ssl_ctx, _cert.data(), SSL_FILETYPE_PEM) <= 0)
 		{
 			SSL_CTX_free(ssl_ctx);
 			std::cerr << "Failed certificate file\n";
 			exit(EXIT_FAILURE);
 		}
-		if (SSL_CTX_use_PrivateKey_file(ssl_ctx, (const char*)_prvt_key.data(), SSL_FILETYPE_PEM) <= 0)
+		if (SSL_CTX_use_PrivateKey_file(ssl_ctx, _prvt_key.data(), SSL_FILETYPE_PEM) <= 0)
 		{
 			SSL_CTX_free(ssl_ctx);
 			std::cerr << "Failed private key file\n";
@@ -236,6 +236,8 @@ HttpsServer::Client::Awaitable HttpsServer::Client::ExecutAsync()
 //-----------------------------------------------------------------------------
 void HttpsServer::Client::Awaitable::await_suspend(std::coroutine_handle<> handle) noexcept
 {
-	client.execution();
+	client->execution();
 	handle.resume();
 }
+//------------------------------------------
+

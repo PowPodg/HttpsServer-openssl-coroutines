@@ -51,6 +51,11 @@ class HttpsServer
 			std::string req = std::string(SIZE_GET_REQ, '\0');
 			int Content_Length = 10;
 			rget();
+			~rget() {
+				resp_header.clear();
+				resp_body.clear();
+				req.clear();
+			}
 			void set_cont_len(const int&);
 		};
 		std::string Header_received = std::string(SIZE_GET_REQ, '\0');
@@ -63,20 +68,22 @@ class HttpsServer
 		rget _get;
 		//---------
 		class Awaitable {
-		public:
-			Awaitable(Client& cl) : client(cl) {};
+		public:		
+			Awaitable(Client& cl) : client(&cl) {}
+			~Awaitable() = default;
 			bool await_ready() const noexcept { return false; }
 			void await_suspend(std::coroutine_handle<> handle) noexcept;
-			void await_resume() const noexcept {  }
+			void await_resume() const noexcept {}
 		private:
-			Client& client;
+			Client* client;
 		};
 		//---------
 	public:
 		Awaitable ExecutAsync();
 		Client(const SOCKET&, SSL_CTX*, const arr_pairs&);
-		void execution();
-	};
+		 void execution();
+		 ~Client() = default;
+		};
 //-------
 	task_asyn Connect_waiting(const int& port);
 public:
