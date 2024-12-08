@@ -206,7 +206,6 @@ void HttpsServer::Client::execution()
 			Analys_expression(copy_arr_pr);
 			if (void_func != nullptr)
 			{
-				//_get.resp_body.clear();
 				void_func(Header_received, _get.resp_body);
 				_get.set_cont_len((int)_get.resp_body.length());
 				if (Send_data(ssl_temp, std::string(_get.resp_header + _get.resp_body.data())) < 1)
