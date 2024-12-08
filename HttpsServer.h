@@ -35,7 +35,7 @@ class HttpsServer
 		using promise_type = asyn_promise;
 	};
 	//-------------
-	using VoidFun = std::function<void(const std::string_view, std::string&)>;
+	using VoidFun = std::function<void(const std::string_view, std::string_view&)>;
 	using arr_pairs = std::vector<std::pair<std::string_view, VoidFun>>;
 	arr_pairs arr_get_pairs;
 	//-----------
@@ -47,7 +47,7 @@ class HttpsServer
 		VoidFun void_func;
 		struct rget {
 			std::string resp_header = std::string(SIZE_GET_REQ, '\0');
-			std::string resp_body = std::string(SIZE_GET_REQ, '\0');
+			std::string_view resp_body = std::string(SIZE_GET_REQ, '\0');
 			std::string req = std::string(SIZE_GET_REQ, '\0');
 			int Content_Length = 10;
 			rget();
