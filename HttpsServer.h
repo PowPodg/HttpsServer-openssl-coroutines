@@ -65,7 +65,6 @@ class HttpsServer
 		class Awaitable {
 		public:		
 			Awaitable(Client& cl) : client(&cl) {}
-			~Awaitable() = default;
 			bool await_ready() const noexcept { return false; }
 			void await_suspend(std::coroutine_handle<> handle) noexcept;
 			void await_resume() const noexcept {}
