@@ -1,21 +1,16 @@
 #pragma once
 
 #include <iostream>
-#include <io.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <string>
 #include <functional>
-#include <utility>
 #include <thread>
 #include <coroutine>
-#include <future>
-#include <algorithm>
 
 #pragma comment(lib, "ws2_32.lib")
 
 #include <openssl/err.h>
-#include <openssl/evp.h>
 #include <openssl/ssl.h>
 
 //----------------------
