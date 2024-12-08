@@ -59,7 +59,7 @@ class HttpsServer
 		//---------
 		class Awaitable {
 		public:
-			Awaitable(Client& cl) : client(&cl) {}
+			Awaitable(Client& cl) : client(std::addressof(cl)) {}
 			bool await_ready() const noexcept { return false; }
 			void await_suspend(std::coroutine_handle<>) noexcept;
 			void await_resume() const noexcept {}
