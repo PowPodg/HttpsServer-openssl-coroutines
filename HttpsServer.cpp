@@ -155,7 +155,7 @@ HttpsServer::Client::rget::rget()
 //--------------------------------------------------------------
 void HttpsServer::Client::rget::set_cont_len(const int& Cont_Length)
 {
-	resp_header = std::string(resp_header) + std::to_string(Cont_Length) + "\r\n\r\n";
+	resp_header = resp_header + std::to_string(Cont_Length) + "\r\n\r\n";
 }
 //----------------------------------------------------------
 int HttpsServer::Client::Receive_data(SSL* ssl_temp)
@@ -175,9 +175,9 @@ int HttpsServer::Client::Receive_data(SSL* ssl_temp)
 	return rxlen;
 }
 //------------------------------------------------------
-int HttpsServer::Client::Send_data(SSL* ssl_temp, const std::string& res)
+int HttpsServer::Client::Send_data(SSL* ssl_temp, const std::string_view res)
 {
-	auto rxlen = SSL_write(ssl_temp, res.c_str(), (int)(res.length()));
+	auto rxlen = SSL_write(ssl_temp, res.data(), (int)(res.length()));
 	if (rxlen < 1)
 	{
 		ERR_print_errors_fp(stderr);
@@ -208,6 +208,7 @@ void HttpsServer::Client::execution()
 			{
 				void_func(Header_received, _get.resp_body);
 				_get.set_cont_len((int)_get.resp_body.length());
+
 				if (Send_data(ssl_temp, std::string(_get.resp_header + _get.resp_body.data())) < 1)
 				{
 					std::cerr << "\nThe page is error\n";

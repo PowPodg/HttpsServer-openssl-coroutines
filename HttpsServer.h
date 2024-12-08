@@ -47,7 +47,7 @@ class HttpsServer
 		VoidFun void_func;
 		struct rget {
 			std::string resp_header = std::string(SIZE_GET_REQ, '\0');
-			std::string_view resp_body = std::string(SIZE_GET_REQ, '\0');
+			std::string_view resp_body;
 			std::string req = std::string(SIZE_GET_REQ, '\0');
 			int Content_Length = 10;
 			rget();
@@ -56,7 +56,7 @@ class HttpsServer
 		std::string Header_received = std::string(SIZE_GET_REQ, '\0');
 		int Receive_data(SSL*);
 		bool Analys_expression(const arr_pairs&);
-		int Send_data(SSL*, const std::string&);
+		int Send_data(SSL*, const std::string_view);
 		SOCKET copy_socket;
 		SSL_CTX* copy_ssl_ctx;
 		arr_pairs copy_arr_pr;
