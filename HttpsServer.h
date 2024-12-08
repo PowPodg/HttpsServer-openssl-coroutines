@@ -42,7 +42,7 @@ class HttpsServer
 	SSL_CTX* ssl_ctx;
 	SOCKET listen_sock;
 	SOCKET Create_listen_socket(const int&);
-//--------
+	//--------
 	class Client {
 		VoidFun void_func;
 		struct rget {
@@ -63,10 +63,10 @@ class HttpsServer
 		rget _get;
 		//---------
 		class Awaitable {
-		public:		
+		public:
 			Awaitable(Client& cl) : client(&cl) {}
 			bool await_ready() const noexcept { return false; }
-			void await_suspend(std::coroutine_handle<> handle) noexcept;
+			void await_suspend(std::coroutine_handle<>) noexcept;
 			void await_resume() const noexcept {}
 		private:
 			Client* client;
@@ -75,9 +75,9 @@ class HttpsServer
 	public:
 		Awaitable ExecutAsync();
 		Client(const SOCKET&, SSL_CTX*, const arr_pairs&);
-		 void execution();
-		};
-//-------
+		void execution();
+	};
+	//-------
 	task_asyn Connect_waiting(const int& port);
 public:
 	HttpsServer(const std::string_view, const std::string_view);

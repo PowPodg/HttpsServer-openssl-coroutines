@@ -100,17 +100,17 @@ HttpsServer::task_asyn HttpsServer::Connect_waiting(const int& port)
 {
 	listen_sock = Create_listen_socket(port);
 
-			while (listen_sock != INVALID_SOCKET)
-			{
-				SOCKET client_sock = accept(listen_sock, nullptr, nullptr);
-				if (client_sock == INVALID_SOCKET) {
-					std::cerr << "\nUnable to accept\n";
-					closesocket(client_sock);
-					continue;
-				}
-			    Client clnt(client_sock, ssl_ctx, arr_get_pairs);
-				co_await clnt.ExecutAsync();
-			}
+	while (listen_sock != INVALID_SOCKET)
+	{
+		SOCKET client_sock = accept(listen_sock, nullptr, nullptr);
+		if (client_sock == INVALID_SOCKET) {
+			std::cerr << "\nUnable to accept\n";
+			closesocket(client_sock);
+			continue;
+		}
+		Client clnt(client_sock, ssl_ctx, arr_get_pairs);
+		co_await clnt.ExecutAsync();
+	}
 }
 //-----------------------------------------------------------
 bool HttpsServer::Listen(const int& port)
@@ -147,10 +147,10 @@ bool HttpsServer::Client::Analys_expression(const arr_pairs& arr_get_prs)
 HttpsServer::Client::rget::rget()
 {
 	resp_header = std::string("HTTP/1.1\r\n"
-	"Version: HTTP/1.1\r\n"
-	"Content-Type: text/html; charset=utf-8\r\n"
-	"</font></h2>"
-	"Content-Length: ");
+		"Version: HTTP/1.1\r\n"
+		"Content-Type: text/html; charset=utf-8\r\n"
+		"</font></h2>"
+		"Content-Length: ");
 }
 //--------------------------------------------------------------
 void HttpsServer::Client::rget::set_cont_len(const int& Cont_Length)
@@ -206,7 +206,7 @@ void HttpsServer::Client::execution()
 			Analys_expression(copy_arr_pr);
 			if (void_func != nullptr)
 			{
-				_get.resp_body.clear();				
+				_get.resp_body.clear();
 				void_func(Header_received, _get.resp_body);
 				_get.set_cont_len((int)_get.resp_body.length());
 				if (Send_data(ssl_temp, std::string(_get.resp_header + _get.resp_body.data())) < 1)
