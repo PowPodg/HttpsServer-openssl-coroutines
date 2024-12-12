@@ -17,9 +17,10 @@
 class HttpsServer
 {
 	static const int SIZE_GET_REQ = 2048;
+
 	struct task_asyn
 	{
-		struct asyn_promise
+		struct promise_type
 		{
 			task_asyn get_return_object() { return task_asyn{}; }
 			std::suspend_never initial_suspend() noexcept { return {}; }
@@ -27,10 +28,30 @@ class HttpsServer
 			void return_void() {}
 			void unhandled_exception() {}
 		};
-		using promise_type = asyn_promise;
+	};
+	//---------------------------------------------------
+	class ret_task_asyn
+	{
+	public:
+		struct promise_type
+		{
+			int _result;
+			ret_task_asyn get_return_object() {
+				return ret_task_asyn{ std::coroutine_handle<promise_type>::from_promise(*this) };
+			}
+			std::suspend_never initial_suspend() noexcept { return {}; }
+			std::suspend_always final_suspend() noexcept { return {}; }
+			void return_value(int res) noexcept { _result = res; }//нужно для co_return
+			void unhandled_exception() { std::terminate(); }
+		};
+		int result() { return handle_.promise()._result; }
+		~ret_task_asyn() { if (handle_) handle_.destroy(); }
+	private:
+		ret_task_asyn(std::coroutine_handle<promise_type> handle) : handle_(handle) {}
+		std::coroutine_handle<promise_type> handle_;
 	};
 	//-------------
-	using VoidFun = std::function<void(const std::string_view, std::string_view&)>;
+	using VoidFun = std::function<void(const std::string_view&, std::string_view&)>;
 	using arr_pairs = std::vector<std::pair<std::string_view, VoidFun>>;
 	arr_pairs arr_get_pairs;
 	//-----------
@@ -39,6 +60,7 @@ class HttpsServer
 	SOCKET Create_listen_socket(const int&);
 	//--------
 	class Client {
+	private:
 		std::string rest_get = "GET ";
 		VoidFun void_func;
 		struct rget {
@@ -57,20 +79,35 @@ class HttpsServer
 		arr_pairs copy_arr_pr;
 		rget _get;
 		//---------
-		class Awaitable {
+		class Await {
 		public:
-			Awaitable(Client& cl) : client(std::addressof(cl)) {}
+			Await(Client& cl) : client(std::addressof(cl)) {}
 			bool await_ready() const noexcept { return false; }
 			void await_suspend(std::coroutine_handle<>) noexcept;
 			void await_resume() const noexcept {}
 		private:
-			Client* client;
+			Client* client = nullptr;
 		};
-		//---------
-	public:
-		Awaitable ExecutAsync();
-		Client(const SOCKET&, SSL_CTX*, const arr_pairs&);
+		//-----------
+		class AwaitSend {
+		public:
+			bool await_ready() const noexcept { return false; }
+			void await_suspend(std::coroutine_handle<>) noexcept;
+			int await_resume() const noexcept { return std::move(Quant_send); }//нужно для co_await, если возвр. значение
+			AwaitSend(Client& cl, SSL* ssl_temp, const std::string_view resp) : client(std::addressof(cl)), _ssl_temp(ssl_temp), _resp(resp) {}
+		private:
+			Client* client = nullptr;
+			SSL* _ssl_temp = nullptr;;
+			std::string_view _resp;
+			int Quant_send = 0;
+		};
+		//---------------------------------------------	
 		void execution();
+		ret_task_asyn _send_data(SSL*, const std::string_view);
+	public:
+		Await ExecutAsync();
+		Client(const SOCKET&, SSL_CTX*, const arr_pairs&);
+		int async_send_data(SSL*, const std::string_view);
 	};
 	//-------
 	task_asyn Connect_waiting(const int& port);

@@ -99,7 +99,6 @@ SOCKET HttpsServer::Create_listen_socket(const int& port)
 HttpsServer::task_asyn HttpsServer::Connect_waiting(const int& port)
 {
 	listen_sock = Create_listen_socket(port);
-
 	while (listen_sock != INVALID_SOCKET)
 	{
 		SOCKET client_sock = accept(listen_sock, nullptr, nullptr);
@@ -188,6 +187,11 @@ HttpsServer::Client::Client(const SOCKET& sock, SSL_CTX* ssl_ctx, const arr_pair
 	copy_ssl_ctx = ssl_ctx;
 	std::copy(arr_pr.begin(), arr_pr.end(), std::back_inserter(copy_arr_pr));
 }
+int HttpsServer::Client::async_send_data(SSL* ssl_temp, const std::string_view resp)
+{
+	auto res = _send_data(ssl_temp, resp);
+	return res.result();
+}
 //-------------------------------------------------
 void HttpsServer::Client::execution()
 {
@@ -204,14 +208,13 @@ void HttpsServer::Client::execution()
 			if (void_func != nullptr)
 			{
 				void_func(Header_received, _get.resp_body);
-				_get.set_cont_len((int)_get.resp_body.length());
-
-				if (Send_data(ssl_temp, std::string(_get.resp_header + _get.resp_body.data())) < 1)
-				{
-					std::cerr << "\nThe page is error\n";
-				}
-				else
-					std::cerr << "\nThe page is OK!\n";
+				_get.set_cont_len((int)_get.resp_body.length());				
+					if (async_send_data(ssl_temp, std::string(_get.resp_header + _get.resp_body.data())) < 1)
+					{
+						std::cerr << "\nThe page is error\n";
+					}
+					else
+						std::cerr << "\nThe page is OK!\n";
 			}
 			else  std::cerr << "\nThe page is not found\n";
 		}
@@ -220,21 +223,35 @@ void HttpsServer::Client::execution()
 		closesocket(copy_socket);
 		return;
 	}
-
 	SSL_shutdown(ssl_temp);
 	SSL_free(ssl_temp);
 	closesocket(copy_socket);
 }
-//----------------------------------------------------------------------------
-HttpsServer::Client::Awaitable HttpsServer::Client::ExecutAsync()
+//-------------------------------------------------------------
+HttpsServer::ret_task_asyn HttpsServer::Client::_send_data(SSL* ssl_temp, const std::string_view resp)
 {
-	return HttpsServer::Client::Awaitable(*this);
+	int offset = 0, sent_bytes = 0;
+	while (offset < resp.size()) {
+	sent_bytes = co_await HttpsServer::Client::AwaitSend(*this, ssl_temp, resp);
+	if(sent_bytes<1) co_return sent_bytes;
+		offset += sent_bytes;
+	}
+	co_return sent_bytes;
+}
+//------------------------------------------------------------
+HttpsServer::Client::Await HttpsServer::Client::ExecutAsync()
+{
+	return HttpsServer::Client::Await(*this);
 }
 //-----------------------------------------------------------------------------
-void HttpsServer::Client::Awaitable::await_suspend(std::coroutine_handle<> handle) noexcept
+void HttpsServer::Client::Await::await_suspend(std::coroutine_handle<> handle) noexcept
 {
 	client->execution();
 	handle.resume();
 }
-//------------------------------------------
-
+//------------------------------------------------------
+void HttpsServer::Client::AwaitSend::await_suspend(std::coroutine_handle<> handle) noexcept
+{
+	Quant_send = client->Send_data(_ssl_temp, _resp);
+	handle.resume();
+}

@@ -2,7 +2,7 @@
 
 ### Simplified  http server for Windows with ssl support (openssl is used - https://github.com/openssl/openssl).
 
-### This project shows an example of using stackless coroutines for client connections
+### This project shows an example of using stackless coroutines (including nested coroutines) for client connections
 
 ```cpp
 HttpsServer srv("cert.pem", "key.pem");
