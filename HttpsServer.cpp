@@ -232,7 +232,7 @@ HttpsServer::ret_task_asyn HttpsServer::Client::_send_data(SSL* ssl_temp, const 
 {
 	int offset = 0, sent_bytes = 0;
 	while (offset < resp.size()) {
-	sent_bytes = co_await HttpsServer::Client::AwaitSend(*this, ssl_temp, resp);
+	sent_bytes = co_await HttpsServer::Client::AwaitSend(*this, ssl_temp, resp.data()+offset);
 	if(sent_bytes<1) co_return sent_bytes;
 		offset += sent_bytes;
 	}
