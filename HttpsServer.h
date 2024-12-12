@@ -41,7 +41,7 @@ class HttpsServer
 			}
 			std::suspend_never initial_suspend() noexcept { return {}; }
 			std::suspend_always final_suspend() noexcept { return {}; }
-			void return_value(int res) noexcept { _result = res; }//нужно для co_return
+			void return_value(int res) noexcept { _result = res; }
 			void unhandled_exception() { std::terminate(); }
 		};
 		int result() { return handle_.promise()._result; }
@@ -93,7 +93,7 @@ class HttpsServer
 		public:
 			bool await_ready() const noexcept { return false; }
 			void await_suspend(std::coroutine_handle<>) noexcept;
-			int await_resume() const noexcept { return std::move(Quant_send); }//нужно для co_await, если возвр. значение
+			int await_resume() const noexcept { return std::move(Quant_send); }
 			AwaitSend(Client& cl, SSL* ssl_temp, const std::string_view resp) : client(std::addressof(cl)), _ssl_temp(ssl_temp), _resp(resp) {}
 		private:
 			Client* client = nullptr;
