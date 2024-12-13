@@ -1,17 +1,33 @@
 #pragma once
 
 #include <iostream>
-#include <winsock2.h>
-#include <ws2tcpip.h>
+
 #include <string>
 #include <functional>
 #include <thread>
 #include <coroutine>
 
-#pragma comment(lib, "ws2_32.lib")
-
 #include <openssl/err.h>
 #include <openssl/ssl.h>
+
+#ifdef _WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
+#else 
+using SOCKET = int;
+#define INVALID_SOCKET  (-1)
+#include <netdb.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+inline int WSACleanup() { return 0; }
+inline int closesocket(SOCKET sock) { return close(sock); }
+using ADDRINFO = struct addrinfo;
+#define WSAGetLastError() (errno)
+#endif
+
 
 //----------------------
 class HttpsServer
@@ -117,3 +133,7 @@ public:
 	bool Get(const std::string_view, VoidFun);
 	bool Listen(const int& port);
 };
+
+#ifndef _WIN32
+#include "HttpsServer.cpp"
+#endif

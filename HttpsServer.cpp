@@ -46,6 +46,8 @@ SOCKET HttpsServer::Create_listen_socket(const int& port)
 {
 	SOCKET Client_socket = INVALID_SOCKET;
 	SOCKET Listen_socket = INVALID_SOCKET;
+
+#ifdef _WIN32
 	WSADATA wsaData;
 
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
@@ -53,6 +55,7 @@ SOCKET HttpsServer::Create_listen_socket(const int& port)
 		std::cerr << "Failed WSAStartup\n";
 		return EXIT_FAILURE;
 	}
+#endif
 	ADDRINFO* addr_inf = nullptr; ;
 	ADDRINFO hints = {};
 	hints.ai_family = AF_INET;
@@ -75,7 +78,7 @@ SOCKET HttpsServer::Create_listen_socket(const int& port)
 		return EXIT_FAILURE;
 	}
 
-	if (bind(Listen_socket, addr_inf->ai_addr, (int)addr_inf->ai_addrlen) == SOCKET_ERROR)
+	if (bind(Listen_socket, addr_inf->ai_addr, (int)addr_inf->ai_addrlen) == INVALID_SOCKET)
 	{
 		std::cerr << "\nBind failed with error: " << WSAGetLastError() << "\n";
 		closesocket(Listen_socket);
@@ -85,7 +88,7 @@ SOCKET HttpsServer::Create_listen_socket(const int& port)
 		return  EXIT_FAILURE;
 	}
 
-	if (listen(Listen_socket, SOMAXCONN) == SOCKET_ERROR)
+	if (listen(Listen_socket, SOMAXCONN) == INVALID_SOCKET)
 	{
 		std::cerr << "\nListen failed with error: " << WSAGetLastError() << "\n";
 		closesocket(Listen_socket);

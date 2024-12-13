@@ -1,6 +1,6 @@
 # HTTPS SSL Server using stackless coroutines (C++20) 
 
-### Simplified  http server for Windows with ssl support (openssl is used - https://github.com/openssl/openssl).
+### Simplified cross-platform (Windows, Linux) http server for ssl support (openssl is used - https://github.com/openssl/openssl).
 
 ### This project shows an example of using stackless coroutines (including nested coroutines) for client connections
 
