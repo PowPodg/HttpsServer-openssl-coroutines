@@ -187,6 +187,7 @@ int HttpsServer::Client::Send_data(SSL* ssl_temp, const std::string_view res)
 HttpsServer::Client::Client(const SOCKET& sock, SSL_CTX* ssl_ctx, const arr_pairs& arr_pr)
 {
 	copy_socket = sock;
+	SSL_CTX_up_ref(ssl_ctx);
 	copy_ssl_ctx = ssl_ctx;
 	std::copy(arr_pr.begin(), arr_pr.end(), std::back_inserter(copy_arr_pr));
 }

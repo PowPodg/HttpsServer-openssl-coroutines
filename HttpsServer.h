@@ -124,6 +124,7 @@ class HttpsServer
 		Await ExecutAsync();
 		Client(const SOCKET&, SSL_CTX*, const arr_pairs&);
 		int async_send_data(SSL*, const std::string_view);
+		~Client() { SSL_CTX_free(copy_ssl_ctx); }
 	};
 	//-------
 	task_asyn Connect_waiting(const int& port);
