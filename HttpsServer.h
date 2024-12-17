@@ -135,6 +135,6 @@ public:
 	bool Listen(const int& port);
 };
 
-#ifndef _WIN32
+#ifndef _MSC_VER
 #include "HttpsServer.cpp"
 #endif
