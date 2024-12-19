@@ -1,4 +1,5 @@
-﻿cmake_minimum_required (VERSION 3.22)
+﻿#cmake -G "MinGW Makefiles" - for Window
+cmake_minimum_required (VERSION 3.22)
 
 project ("main")
 
