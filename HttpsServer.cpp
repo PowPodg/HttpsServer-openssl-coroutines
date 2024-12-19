@@ -1,4 +1,4 @@
-#pragma once
+//#pragma once
 #include "HttpsServer.h"
 
 
@@ -161,6 +161,7 @@ int HttpsServer::Client::Receive_data(SSL* ssl_temp)
 {
 	int rxlen = SSL_read(ssl_temp, (void*)Header_received.c_str(), SIZE_GET_REQ);
 	Header_received.resize(rxlen + 1);
+#ifdef _DEBUG
 	if (rxlen <= 0)
 	{
 		if (rxlen == 0) {
@@ -171,16 +172,19 @@ int HttpsServer::Client::Receive_data(SSL* ssl_temp)
 		}
 		ERR_print_errors_fp(stderr);
 	}
+#endif
 	return rxlen;
 }
 //------------------------------------------------------
 int HttpsServer::Client::Send_data(SSL* ssl_temp, const std::string_view res)
 {
 	auto rxlen = SSL_write(ssl_temp, res.data(), (int)(res.length()));
+#ifdef _DEBUG
 	if (rxlen < 1)
 	{
 		ERR_print_errors_fp(stderr);
 	}
+#endif
 	return rxlen;
 }
 //-------------------------------------------
@@ -203,7 +207,9 @@ void HttpsServer::Client::execution()
 	SSL_set_fd(ssl_temp, (int)copy_socket);
 
 	if (SSL_accept(ssl_temp) <= 0) {
+	#ifdef _DEBUG
 		ERR_print_errors_fp(stderr);
+	#endif
 	}
 	else {
 		auto reseiv = Receive_data(ssl_temp);
